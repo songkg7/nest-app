@@ -6,42 +6,36 @@ import {
   Param,
   Patch,
   Post,
-  Query,
 } from '@nestjs/common';
+import { MoviesService } from './movies.service';
+import { Movie } from './entity/movie.entity';
 
 @Controller('movies')
 export class MoviesController {
+  constructor(private readonly moviesService: MoviesService) {}
+
   @Get()
-  getAll(): string {
-    return 'This will return all movies';
+  getAll(): Movie[] {
+    return this.moviesService.getAll();
   }
 
-  @Get('search')
-  search(@Query('year') searchingYear: string) {
-    return `We are searching for a movie with made after: ${searchingYear}`;
-  }
-
-  @Get('/:id')
-  getOne(@Param('id') id: string) {
-    return `This will return one movie with the id: ${id}`;
+  @Get(':id')
+  getOne(@Param('id') movieId: string): Movie {
+    return this.moviesService.getOne(movieId);
   }
 
   @Post()
   create(@Body() movieData) {
-    console.log(movieData);
-    return movieData;
+    return this.moviesService.create(movieData);
   }
 
-  @Delete('/:id')
+  @Delete(':id')
   remove(@Param('id') movieId: string) {
-    return `This will delete a movie with the id: ${movieId}`;
+    return this.moviesService.deleteOne(movieId);
   }
 
-  @Patch('/:id')
+  @Patch(':id')
   patch(@Param('id') movieId: string, @Body() updateData) {
-    return {
-      updatedMovie: movieId,
-      ...updateData,
-    };
+    return this.moviesService.update(movieId, updateData);
   }
 }
